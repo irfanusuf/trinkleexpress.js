@@ -9,7 +9,7 @@ const isAuth = (req, res, next) => {
 
         const { token } = req.query    // query paramter ?token=  // param /:token
 
-        console.log("token" , token)
+        // console.log("token" , token)
 
         if (token === undefined || token === null) {
             return res.status(401).json({ message: "UnAuthorised Kindly Login again !" })
@@ -30,7 +30,7 @@ const isAuth = (req, res, next) => {
 
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ message: "Internal server Error !" })
+        // return res.status(500).json({ message: "Internal server Error !" })
     }
 
 }

@@ -103,7 +103,7 @@ const { User } = require("../models/user");
 exports.createPost = async (req, res) => {
   try {
     const { postCaption } = req.body;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const post = await Post.create({
       postPicUrl: req.file?.path || null,
@@ -130,7 +130,7 @@ exports.createPost = async (req, res) => {
 exports.likePost = async (req, res) => {
   try {
     const { postId } = req.query;
-    const userId = req.user.id;
+      const userId = req.user.userId;
 
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: "Post not found" });
@@ -162,7 +162,7 @@ exports.likePost = async (req, res) => {
 exports.commentOnPost = async (req, res) => {
   try {
     const { postId, text } = req.body;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: "Post not found" });
@@ -195,7 +195,7 @@ exports.commentOnPost = async (req, res) => {
 exports.replyOnComment = async (req, res) => {
   try {
     const { postId, commentId, text } = req.body;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: "Post not found" });
@@ -227,7 +227,7 @@ exports.replyOnComment = async (req, res) => {
 exports.editComment = async (req, res) => {
   try {
     const { postId, commentId, newText } = req.body;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: "Post not found" });
@@ -332,7 +332,7 @@ exports.reportUser = async (req, res) => {
 // -------------------------------------------------------------
 exports.uploadStory = async (req, res) => {
   try {
-    const userId = req.user.id;
+     const userId = req.user.userId;
 
     await User.findByIdAndUpdate(userId, {
       $push: {
@@ -356,7 +356,7 @@ exports.uploadStory = async (req, res) => {
 // -------------------------------------------------------------
 exports.uploadMultipleStories = async (req, res) => {
   try {
-    const userId = req.user.id;
+       const userId = req.user.userId;
 
     const storyArray = req.files?.map(f => ({
       storyUrl: f.path

@@ -99,10 +99,7 @@ exports.loginhandler = async (req, res) => {
 exports.fetchUserhandler = async (req, res) => {
     try {
 
-
-        console.log("request user", req.user)
-
-        let { userId } = req.user
+        const userId = req.user.userId;
 
         let user = await User.findById(userId)    // userId objectID
 
