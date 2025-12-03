@@ -95,6 +95,7 @@
 const mongoose = require("mongoose");
 const { Post } = require("../models/post");
 const { User } = require("../models/user");
+const { uploadToCloudinary } = require("../config/cloudinary");
 
 
 // -------------------------------------------------------------
@@ -102,23 +103,35 @@ const { User } = require("../models/user");
 // -------------------------------------------------------------
 exports.createPost = async (req, res) => {
   try {
-    const { postCaption } = req.body;
+
     const userId = req.user.userId;
+    const { postCaption, imageFile } = req.body;
+
+    let secure_url
+
+    if (imageFile !== "") {
+      secure_url = await uploadToCloudinary(imageFile)
+    }
+
 
     const post = await Post.create({
-      postPicUrl: req.file?.path || null,
+      postPicUrl: secure_url,
       postCaption,
       userId
     });
+
+
 
     await User.findByIdAndUpdate(userId, {
       $push: { posts: { postId: post._id } }
     });
 
-    res.json({ success: true, post });
+   return res.json({ success: true, payload :  post });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.log(err)
+   return res.status(500).json({ message: "Internal Server Error" });
+    
   }
 };
 
@@ -130,7 +143,7 @@ exports.createPost = async (req, res) => {
 exports.likePost = async (req, res) => {
   try {
     const { postId } = req.query;
-      const userId = req.user.userId;
+    const userId = req.user.userId;
 
     const post = await Post.findById(postId);
     if (!post) return res.status(404).json({ message: "Post not found" });
@@ -332,7 +345,7 @@ exports.reportUser = async (req, res) => {
 // -------------------------------------------------------------
 exports.uploadStory = async (req, res) => {
   try {
-     const userId = req.user.userId;
+    const userId = req.user.userId;
 
     await User.findByIdAndUpdate(userId, {
       $push: {
@@ -356,7 +369,7 @@ exports.uploadStory = async (req, res) => {
 // -------------------------------------------------------------
 exports.uploadMultipleStories = async (req, res) => {
   try {
-       const userId = req.user.userId;
+    const userId = req.user.userId;
 
     const storyArray = req.files?.map(f => ({
       storyUrl: f.path

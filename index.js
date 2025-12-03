@@ -1,5 +1,4 @@
 const express = require("express")
-
 const connectDb = require("./config/connectDB")
 const cors = require("cors")
 
@@ -41,7 +40,12 @@ connectDb()
 
 
 app.use(bodyParser.json())
-app.use(cors())
+
+app.use(cors({
+    origin : "http://localhost:3000",    // accept requests only from this client 
+    credentials : true     // ask for cookie   .// cookie is an  identity card  which is  with every request header 
+}))
+
 app.use('/uploads', express.static('uploads')) // serve uploaded files
 
 
@@ -62,6 +66,8 @@ app.post("/user/report/:userId", isAuth, reportUser) // body: { reportText }
 
 // posts
 app.post("/post/create", isAuth, multMid,  createPost)
+
+
 app.post("/post/like/:postId", isAuth, likePost)
 app.post("/post/comment/:postId", isAuth, commentOnPost)
 app.post("/post/comment/:postId/reply/:commentId", isAuth, replyOnComment)
