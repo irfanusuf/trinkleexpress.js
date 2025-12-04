@@ -17,6 +17,7 @@ cloudinary.config({
 const uploadToCloudinary = async (file) => {
 
     try {
+        if(!file) return
         const uploadToCloud = await cloudinary.uploader.upload(file, {
             folder: "Trinkle_buddies"
         })
@@ -24,7 +25,7 @@ const uploadToCloudinary = async (file) => {
         return secureUrl
 
     } catch (error) {
-        console.log(error)
+        console.log("Cloudinary Error " , error)
     }
 
 }

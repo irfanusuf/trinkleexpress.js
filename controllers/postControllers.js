@@ -109,7 +109,10 @@ exports.createPost = async (req, res) => {
 
     let secure_url
 
-    if (imageFile !== "") {
+
+    if (imageFile !== null) {
+
+      // console.log("the image file is " ,  imageFile)
       secure_url = await uploadToCloudinary(imageFile)
     }
 
@@ -134,6 +137,30 @@ exports.createPost = async (req, res) => {
     
   }
 };
+
+
+exports.fetchposts = async (req,res) =>{
+
+  try {
+    const {userId} = req.user
+
+    const posts = await Post.find({userId})
+
+    if(posts.length > 0){
+      return res.json({success : true , payload : posts})
+    }
+
+    else{
+      return res.json({success : false})
+    }
+
+
+  } catch (error) {
+    console.log(error)
+  }
+
+}
+
 
 
 

@@ -25,8 +25,11 @@ reportComment,
 reportPost,
 reportUser,
 uploadStory,
-uploadMultipleStories
+uploadMultipleStories,
+fetchposts
 } = require("./controllers/postControllers")
+
+
 const bodyParser = require("body-parser")
 const isAuth = require("./middlewares/IsAuthorised")
 const multMid = require("./middlewares/multer")
@@ -48,7 +51,6 @@ app.use(cors({
 
 app.use('/uploads', express.static('uploads')) // serve uploaded files
 
-
 app.get("/", (req, res) => res.send("hello from the server "))
 
 
@@ -66,6 +68,7 @@ app.post("/user/report/:userId", isAuth, reportUser) // body: { reportText }
 
 // posts
 app.post("/post/create", isAuth, multMid,  createPost)
+app.get("/fetch/posts" , isAuth ,  fetchposts)
 
 
 app.post("/post/like/:postId", isAuth, likePost)
