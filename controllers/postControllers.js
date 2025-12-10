@@ -169,7 +169,7 @@ exports.fetchposts = async (req,res) =>{
 // -------------------------------------------------------------
 exports.likePost = async (req, res) => {
   try {
-    const { postId } = req.query;
+    const { postId } = req.params;
     const userId = req.user.userId;
 
     const post = await Post.findById(postId);
