@@ -138,6 +138,9 @@ exports.createPost = async (req, res) => {
   }
 };
 
+// -------------------------------------------------------------
+// 1. CREATE POST
+// -------------------------------------------------------------
 
 exports.fetchposts = async (req,res) =>{
 
@@ -160,10 +163,6 @@ exports.fetchposts = async (req,res) =>{
   }
 
 }
-
-
-
-
 // -------------------------------------------------------------
 // 2. LIKE POST
 // -------------------------------------------------------------
@@ -193,15 +192,16 @@ exports.likePost = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-
-
 // -------------------------------------------------------------
 // 3. COMMENT ON POST
 // -------------------------------------------------------------
 exports.commentOnPost = async (req, res) => {
   try {
-    const { postId, text } = req.body;
+
+    const {postId} = req.params
+    
+    const {  text } = req.body;
+
     const userId = req.user.userId;
 
     const post = await Post.findById(postId);
@@ -226,9 +226,6 @@ exports.commentOnPost = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-
-
 // -------------------------------------------------------------
 // 4. REPLY ON COMMENT
 // -------------------------------------------------------------
