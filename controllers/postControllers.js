@@ -139,7 +139,7 @@ exports.createPost = async (req, res) => {
 };
 
 // -------------------------------------------------------------
-// 1. CREATE POST
+// 1. FETCH POSTS
 // -------------------------------------------------------------
 
 exports.fetchposts = async (req,res) =>{
@@ -147,7 +147,7 @@ exports.fetchposts = async (req,res) =>{
   try {
     const {userId} = req.user
 
-    const posts = await Post.find({userId})
+    const posts = await Post.find({ userId }).populate('comments.userId', 'username profilePic');
 
     if(posts.length > 0){
       return res.json({success : true , payload : posts})
@@ -286,8 +286,7 @@ exports.editComment = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-
+ 
 
 // -------------------------------------------------------------
 // 6. REPORT COMMENT
