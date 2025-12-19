@@ -1,4 +1,4 @@
-const e = require("express")
+
 const { User } = require("../models/user")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
@@ -6,7 +6,7 @@ const { transporter } = require("../config/nodemailer")
 require('dotenv').config()
 
 
-exports.registerHandler = async (req, res) => {
+exports.register = async (req, res) => {
 
     try {
 
@@ -54,7 +54,7 @@ exports.registerHandler = async (req, res) => {
 }
 
 
-exports.loginhandler = async (req, res) => {
+exports.login= async (req, res) => {
 
     try {
 
@@ -81,7 +81,11 @@ exports.loginhandler = async (req, res) => {
             const token = jwt.sign(payload, process.env.SECRET_KEY, {
                 expiresIn: 24 * 60 * 60 * 1000
             })
-            return res.json({ message: "Logged in succesfully !", token })
+
+            res.cookie("authToken" , token , {maxAge :  24 * 60 * 60 * 1000 })
+
+
+            return res.json({ status : true ,  message: "Logged in succesfully !" })
         } else {
             return res.status(400).json({ message: "Password incorrect !" })
         }
@@ -96,7 +100,27 @@ exports.loginhandler = async (req, res) => {
 }
 
 
-exports.fetchUserhandler = async (req, res) => {
+exports.verifyUser = async (req, res) => {
+    try {
+
+        const userId = req.user.userId;
+
+        let user = await User.findById(userId)    // userId objectID
+
+        if (user === null) {
+            return res.status(404).json({success : false})
+        } else {
+            return res.status(200).json({ success: true , message: "User Verified" })
+        }
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ success : false ,  message: "Internal server Error !" })
+    }
+
+}
+
+
+exports.userDetails = async (req, res) => {
     try {
 
         const userId = req.user.userId;
@@ -116,7 +140,7 @@ exports.fetchUserhandler = async (req, res) => {
 }
 
 
-exports.updateUserHandler= async(req, res) =>{
+exports.updateUser= async(req, res) =>{
     try {
         const updates = req.body
         const user = await User.findByIdAndUpdate(req.user._id, updates, { new: true }).select('-password')
@@ -125,7 +149,7 @@ exports.updateUserHandler= async(req, res) =>{
 }
 
 
-exports.updateBioHandler = async(req, res)=> {
+exports.updateBio = async(req, res)=> {
     try {
         const { bio } = req.body
         const user = await User.findByIdAndUpdate(req.user._id, { bio }, { new: true }).select('-password')
@@ -134,7 +158,7 @@ exports.updateBioHandler = async(req, res)=> {
 }
 
 
-exports.uploadProfilePicHandler= async(req, res) =>{
+exports.uploadProfile= async(req, res) =>{
     try {
         if (!req.file) return res.status(400).json({ message: 'no file' })
         const url = `/uploads/${req.file.filename}`
@@ -144,7 +168,7 @@ exports.uploadProfilePicHandler= async(req, res) =>{
 }
 
 
-exports.followUserHandler = async(req, res)=> {
+exports.followUser = async(req, res)=> {
     try {
         const targetId = req.params.targetId
         if (req.user._id.equals(targetId)) return res.status(400).json({ message: 'cannot follow self' })
@@ -166,7 +190,7 @@ exports.followUserHandler = async(req, res)=> {
 }
 
 
-exports.unfollowUserHandler = async (req, res) => {
+exports.unfollowUser = async (req, res) => {
     try {
         const targetId = req.params.targetId
         const target = await User.findById(targetId)

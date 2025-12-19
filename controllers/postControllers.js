@@ -142,12 +142,35 @@ exports.createPost = async (req, res) => {
 // 1. FETCH POSTS
 // -------------------------------------------------------------
 
-exports.fetchposts = async (req,res) =>{
+exports.fetchUserposts = async (req,res) =>{
 
   try {
     const {userId} = req.user
 
     const posts = await Post.find({ userId }).populate('comments.userId', 'username profilePic');
+
+    if(posts.length > 0){
+      return res.json({success : true , payload : posts})
+    }
+
+    else{
+      return res.json({success : false})
+    }
+
+
+  } catch (error) {
+    console.log(error)
+  }
+
+}
+
+
+exports.fetchExploreposts = async (req,res) =>{
+
+  try {
+    
+
+    const posts = await Post.find().populate('comments.userId', 'username profilePic');
 
     if(posts.length > 0){
       return res.json({success : true , payload : posts})
@@ -231,7 +254,10 @@ exports.commentOnPost = async (req, res) => {
 // -------------------------------------------------------------
 exports.replyOnComment = async (req, res) => {
   try {
-    const { postId, commentId, text } = req.body;
+    const {postId , commentId} = req.params
+    
+    const {  text } = req.body;
+
     const userId = req.user.userId;
 
     const post = await Post.findById(postId);

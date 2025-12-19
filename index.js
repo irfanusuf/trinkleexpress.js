@@ -5,14 +5,15 @@ const path = require("path")
 
 
 const {
-registerHandler,
-loginhandler,
-fetchUserhandler,
-updateUserHandler,
-updateBioHandler,
-uploadProfilePicHandler,
-followUserHandler,
-unfollowUserHandler
+register,
+login,
+userDetails,
+verifyUser,
+updateUser,
+updateBio,
+uploadProfile,
+followUser,
+unfollowUser
 } = require("./controllers/userController")
 
 
@@ -27,13 +28,17 @@ reportPost,
 reportUser,
 uploadStory,
 uploadMultipleStories,
-fetchposts
+fetchUserposts,
+fetchExploreposts,
+
 } = require("./controllers/postControllers")
 
 
 const bodyParser = require("body-parser")
+const cookieParser = require("cookie-parser")
 const isAuth = require("./middlewares/IsAuthorised")
 const multMid = require("./middlewares/multer")
+
 
 
 const app = express()
@@ -44,6 +49,7 @@ connectDb()
 
 
 app.use(bodyParser.json())
+app.use(cookieParser())
 
 app.use(cors({
     origin : "http://localhost:3000",    // accept requests only from this client 
@@ -56,25 +62,32 @@ app.get("/", (req, res) => res.sendFile(path.join(__dirname , "views" , "index.h
 
 
 // user
-app.post("/user/register", registerHandler)
-app.post("/user/login", loginhandler)
-app.get("/user/verify", isAuth, fetchUserhandler)
-app.put("/user/update", isAuth, updateUserHandler)
-app.put("/user/bio", isAuth, updateBioHandler)
-app.post("/user/profile-pic", isAuth, multMid, uploadProfilePicHandler)
-app.post("/user/follow/:targetId", isAuth, followUserHandler)
-app.post("/user/unfollow/:targetId", isAuth, unfollowUserHandler)
+app.post("/user/register", register)
+app.post("/user/login", login)
+
+
+app.get("/user/verifyUser", isAuth, verifyUser)
+
+app.get("/user/userDetails", isAuth, userDetails)
+app.put("/user/update", isAuth, updateUser)
+app.put("/user/bio", isAuth, updateBio)
+app.post("/user/uploadProfile", isAuth, multMid, uploadProfile)
+app.post("/user/follow/:targetId", isAuth, followUser)
+app.post("/user/unfollow/:targetId", isAuth, unfollowUser)
 app.post("/user/report/:userId", isAuth, reportUser) // body: { reportText }
 
 
 // posts
 app.post("/post/create", isAuth, multMid,  createPost)
-app.get("/fetch/posts" , isAuth ,  fetchposts)
+app.get("/posts/userPosts" , isAuth , fetchUserposts )
+app.get("/posts/explore" , isAuth , fetchExploreposts )
 
 
 app.post("/post/like/:postId", isAuth, likePost)
 app.post("/post/comment/:postId", isAuth, commentOnPost)
+
 app.post("/post/comment/:postId/reply/:commentId", isAuth, replyOnComment)
+
 app.put("/post/comment/:postId/edit/:commentId", isAuth, editComment)
 app.post("/post/comment/:postId/report/:commentId", isAuth, reportComment)
 app.post("/post/report/:postId", isAuth, reportPost)

@@ -7,7 +7,8 @@ const isAuth = (req, res, next) => {
 
     try {
 
-        const { token } = req.query    // query paramter ?token=  // param /:token
+
+        const token = req.cookies.authToken   // query paramter ?token=  // param /:token
 
         // console.log("token" , token)
 
