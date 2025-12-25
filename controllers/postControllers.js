@@ -145,9 +145,9 @@ exports.createPost = async (req, res) => {
 exports.fetchUserposts = async (req,res) =>{
 
   try {
-    const {userId} = req.user
+    const {userId} = req.params
 
-    const posts = await Post.find({ userId }).populate('comments.userId', 'username profilePic');
+    const posts = await Post.find({ userId }).populate("userId" , "username").populate('comments.userId', 'username profilePic');
 
     if(posts.length > 0){
       return res.json({success : true , payload : posts})

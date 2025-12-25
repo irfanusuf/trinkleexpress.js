@@ -67,20 +67,21 @@ app.post("/user/login", login)
 
 
 app.get("/user/verifyUser", isAuth, verifyUser)
-
-app.get("/user/userDetails", isAuth, userDetails)
+app.get("/user/userDetails/:username", isAuth, userDetails)
 app.put("/user/update", isAuth, updateUser)
 app.put("/user/bio", isAuth, updateBio)
 app.post("/user/uploadProfile", isAuth, multMid, uploadProfile)
 app.post("/user/follow/:targetId", isAuth, followUser)
 app.post("/user/unfollow/:targetId", isAuth, unfollowUser)
+
 app.post("/user/report/:userId", isAuth, reportUser) // body: { reportText }
 
 
 // posts
 app.post("/post/create", isAuth, multMid,  createPost)
-app.get("/posts/userPosts" , isAuth , fetchUserposts )
-app.get("/posts/explore" , isAuth , fetchExploreposts )
+app.get("/posts/user/:userId" , isAuth , fetchUserposts )
+
+app.get("/posts/explorePosts" , isAuth , fetchExploreposts )
 
 
 app.post("/post/like/:postId", isAuth, likePost)

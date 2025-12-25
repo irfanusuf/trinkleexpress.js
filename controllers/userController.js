@@ -54,7 +54,7 @@ exports.register = async (req, res) => {
 }
 
 
-exports.login= async (req, res) => {
+exports.login = async (req, res) => {
 
     try {
 
@@ -82,10 +82,14 @@ exports.login= async (req, res) => {
                 expiresIn: 24 * 60 * 60 * 1000
             })
 
-            res.cookie("authToken" , token , {maxAge :  24 * 60 * 60 * 1000 })
+            res.cookie("authToken", token, { maxAge: 24 * 60 * 60 * 1000 })
 
 
-            return res.json({ status : true ,  message: "Logged in succesfully !" })
+            return res.json({
+                success: true,
+                message: "Logged in succesfully !",
+                payload: existingUser.username
+            })
         } else {
             return res.status(400).json({ message: "Password incorrect !" })
         }
@@ -108,13 +112,13 @@ exports.verifyUser = async (req, res) => {
         let user = await User.findById(userId)    // userId objectID
 
         if (user === null) {
-            return res.status(404).json({success : false})
+            return res.status(404).json({ success: false })
         } else {
-            return res.status(200).json({ success: true , message: "User Verified" })
+            return res.status(200).json({ success: true, message: "User Verified" })
         }
     } catch (error) {
         console.log(error)
-        return res.status(500).json({ success : false ,  message: "Internal server Error !" })
+        return res.status(500).json({ success: false, message: "Internal server Error !" })
     }
 
 }
@@ -123,12 +127,13 @@ exports.verifyUser = async (req, res) => {
 exports.userDetails = async (req, res) => {
     try {
 
-        const userId = req.user.userId;
+        const { username } = req.params
 
-        let user = await User.findById(userId)    // userId objectID
+
+        let user = await User.findOne({ username })    // userId objectID
 
         if (user !== null) {
-            return res.status(200).json({ message: "1 user Found !", payload: user })
+            return res.status(200).json({ success: true, payload: user })
         } else {
             return res.status(404).json({ message: "User Not Found !" })
         }
@@ -140,7 +145,7 @@ exports.userDetails = async (req, res) => {
 }
 
 
-exports.updateUser= async(req, res) =>{
+exports.updateUser = async (req, res) => {
     try {
         const updates = req.body
         const user = await User.findByIdAndUpdate(req.user._id, updates, { new: true }).select('-password')
@@ -149,7 +154,7 @@ exports.updateUser= async(req, res) =>{
 }
 
 
-exports.updateBio = async(req, res)=> {
+exports.updateBio = async (req, res) => {
     try {
         const { bio } = req.body
         const user = await User.findByIdAndUpdate(req.user._id, { bio }, { new: true }).select('-password')
@@ -158,7 +163,7 @@ exports.updateBio = async(req, res)=> {
 }
 
 
-exports.uploadProfile= async(req, res) =>{
+exports.uploadProfile = async (req, res) => {
     try {
         if (!req.file) return res.status(400).json({ message: 'no file' })
         const url = `/uploads/${req.file.filename}`
@@ -168,7 +173,7 @@ exports.uploadProfile= async(req, res) =>{
 }
 
 
-exports.followUser = async(req, res)=> {
+exports.followUser = async (req, res) => {
     try {
         const targetId = req.params.targetId
         if (req.user._id.equals(targetId)) return res.status(400).json({ message: 'cannot follow self' })
