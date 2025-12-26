@@ -52,7 +52,7 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 
 app.use(cors({
-    origin : "https://trinklebuddies.onrender.com",    // accept requests only from this client 
+    origin : "https://devsoutreach.vercel.app",    // accept requests only from this client 
     credentials : true     // ask for cookie   .// cookie is an  identity card  which is  with every request header 
 }))
 
