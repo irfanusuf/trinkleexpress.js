@@ -170,7 +170,7 @@ exports.fetchExploreposts = async (req,res) =>{
   try {
     
 
-    const posts = await Post.find().populate('comments.userId', 'username profilePic');
+    const posts = await Post.find().populate("userId" , "username profilePic").populate('comments.userId', 'username profilePic');
 
     if(posts.length > 0){
       return res.json({success : true , payload : posts})
