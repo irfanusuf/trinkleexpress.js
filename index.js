@@ -52,7 +52,7 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 
 app.use(cors({
-    origin : "http://localhost:3000",    // accept requests only from this client 
+    origin : "https://trinklebuddies.onrender.com",    // accept requests only from this client 
     credentials : true     // ask for cookie   .// cookie is an  identity card  which is  with every request header 
 }))
 
