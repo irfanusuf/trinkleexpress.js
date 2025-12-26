@@ -37,7 +37,7 @@ fetchExploreposts,
 const bodyParser = require("body-parser")
 const cookieParser = require("cookie-parser")
 const isAuth = require("./middlewares/IsAuthorised")
-const multMid = require("./middlewares/multer")
+const {multMid , uploadProfileMidWare} = require("./middlewares/multer")
 
 
 
@@ -62,12 +62,16 @@ app.get("/", (req, res) => res.sendFile(path.join(__dirname , "views" , "index.h
 
 
 // user
-app.post("/user/register", register)
+app.post("/user/register",uploadProfileMidWare, register)
 app.post("/user/login", login)
 
 
 app.get("/user/verifyUser", isAuth, verifyUser)
+
+
 app.get("/user/userDetails/:username", isAuth, userDetails)
+
+
 app.put("/user/update", isAuth, updateUser)
 app.put("/user/bio", isAuth, updateBio)
 app.post("/user/uploadProfile", isAuth, multMid, uploadProfile)

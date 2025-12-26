@@ -14,12 +14,12 @@ cloudinary.config({
 
 
 
-const uploadToCloudinary = async (file) => {
+const uploadToCloudinary = async (file , folderName) => {
 
     try {
         if(!file) return
         const uploadToCloud = await cloudinary.uploader.upload(file, {
-            folder: "Trinkle_buddies"
+            folder: folderName
         })
         const secureUrl = uploadToCloud.secure_url
         return secureUrl
@@ -29,6 +29,9 @@ const uploadToCloudinary = async (file) => {
     }
 
 }
+
+
+
 
 
 module.exports = { uploadToCloudinary}

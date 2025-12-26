@@ -14,7 +14,9 @@ const upload = multer({
 
 const multMid = upload.single("postImage")
 
+const uploadProfileMidWare = upload.single("profilepic")
 
 
 
-module.exports = multMid
+
+module.exports = {multMid , uploadProfileMidWare}

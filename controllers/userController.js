@@ -3,6 +3,7 @@ const { User } = require("../models/user")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const { transporter } = require("../config/nodemailer")
+const { uploadToCloudinary } = require("../config/cloudinary")
 require('dotenv').config()
 
 
@@ -11,6 +12,8 @@ exports.register = async (req, res) => {
     try {
 
         const { email, username, password } = req.body
+
+        
 
         if (email === "" || password === "" || username === "") {
 
@@ -25,14 +28,40 @@ exports.register = async (req, res) => {
 
         const encryptPass = await bcrypt.hash(password, 10)
 
-        await User.create({ email, username, password: encryptPass })
+        const profilepic = req.file && req.file.path
+        let secureProfilePicUrl 
+
+        if (profilepic !== undefined) {
+            console.log("uploading......")
+             secureProfilePicUrl = await uploadToCloudinary(profilepic, "Devs-Outreach-ProfilePics")
+        }
+
+        const newUser = await User.create({ email, username, password: encryptPass, profilePic: secureProfilePicUrl || ""})
+
+        const payload = {
+            userId: newUser._id,
+            username: newUser.username
+        }
+
+        const token = jwt.sign(payload, process.env.SECRET_KEY, {
+            expiresIn: 7 * 24 * 60 * 60 * 1000
+        })
+
+        res.cookie("authToken", token, { maxAge: 7 * 24 * 60 * 60 * 1000 })
+
+        res.json({
+            success: true,
+            message: "New User created Succesfully !",
+            payload: newUser.username
+        })
+
 
         const mailOptions = {
 
             from: process.env.SMTP_USER,
             to: email,
             subject: "Registration Succesfull",
-            html: "<h2> Welcome to the trinkle buddies we are very happy that u joined our platform</h2>"
+            html: "<h2> Welcome to the devsOutreach we are very happy that u joined our platform</h2>"
         }
 
         await transporter.sendMail(mailOptions)
@@ -41,12 +70,6 @@ exports.register = async (req, res) => {
         // if (sendMail.rejected) {
         //     console.log(sendMail)    
         // }
-
-
-        return res.status(201).json({ messsage: "New User created Succesfully!" })
-
-
-
     } catch (error) {
         console.log(error)
         return res.status(500).json({ message: "Server  Error" })
@@ -126,12 +149,8 @@ exports.verifyUser = async (req, res) => {
 
 exports.userDetails = async (req, res) => {
     try {
-
         const { username } = req.params
-
-
-        let user = await User.findOne({ username })    // userId objectID
-
+        let user = await User.findOne({ username })    // userId objectID    log n        // findById log 0 
         if (user !== null) {
             return res.status(200).json({ success: true, payload: user })
         } else {
@@ -141,7 +160,6 @@ exports.userDetails = async (req, res) => {
         console.log(error)
         return res.status(500).json({ message: "Internal server Error !" })
     }
-
 }
 
 

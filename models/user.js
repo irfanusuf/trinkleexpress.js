@@ -5,9 +5,7 @@ const Userschema = new mongoose.Schema({
     username: { type: String },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-
     posts: [{ postId: { type: mongoose.Schema.Types.ObjectId, ref: 'Post' } }],
-
     followers: [{ userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } }],
     following: [{ userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } }],
     profilePic: { type: String },
