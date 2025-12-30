@@ -137,7 +137,7 @@ exports.verifyUser = async (req, res) => {
         if (user === null) {
             return res.status(404).json({ success: false })
         } else {
-            return res.status(200).json({ success: true, message: "User Verified" })
+            return res.status(200).json({ success: true, message: "User Verified" , payload : user._id })
         }
     } catch (error) {
         console.log(error)
