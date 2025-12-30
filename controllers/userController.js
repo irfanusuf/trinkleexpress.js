@@ -47,12 +47,19 @@ exports.register = async (req, res) => {
             expiresIn: 7 * 24 * 60 * 60 * 1000
         })
 
+        const cookieOptions = {
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
+            httpOnly: true, // prevent access from JS
+            secure: process.env.NODE_ENV === 'production', // required for SameSite=None
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // allow cross-site in production
+        }
 
-        res.cookie("authToken", token, {
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-            httpOnly: false,
-            secure: true
-        })
+        // // Optionally set a specific domain for production (e.g. ".example.com")
+        // if (process.env.NODE_ENV === 'production' && process.env.COOKIE_DOMAIN) {
+        //     cookieOptions.domain = process.env.COOKIE_DOMAIN
+        // }
+
+        res.cookie("authToken", token, cookieOptions)
 
         res.json({
             success: true,
@@ -110,12 +117,14 @@ exports.login = async (req, res) => {
                 expiresIn: 7 * 24 * 60 * 60 * 1000
             })
 
-            res.cookie("authToken", token, {
-                maxAge: 7 * 24 * 60 * 60 * 1000,
-                httpOnly: false,
-                secure: true
-            })
+            const cookieOptions = {
+                maxAge: 7 * 24 * 60 * 60 * 1000, 
+                httpOnly: true, 
+                secure: process.env.NODE_ENV === 'production', 
+                sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' 
+            }
 
+            res.cookie("authToken", token, cookieOptions)
 
             return res.json({
                 success: true,
