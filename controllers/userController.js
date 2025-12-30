@@ -13,7 +13,7 @@ exports.register = async (req, res) => {
 
         const { email, username, password } = req.body
 
-        
+
 
         if (email === "" || password === "" || username === "") {
 
@@ -29,14 +29,14 @@ exports.register = async (req, res) => {
         const encryptPass = await bcrypt.hash(password, 10)
 
         const profilepic = req.file && req.file.path
-        let secureProfilePicUrl 
+        let secureProfilePicUrl
 
         if (profilepic !== undefined) {
             console.log("uploading......")
-             secureProfilePicUrl = await uploadToCloudinary(profilepic, "Devs-Outreach-ProfilePics")
+            secureProfilePicUrl = await uploadToCloudinary(profilepic, "Devs-Outreach-ProfilePics")
         }
 
-        const newUser = await User.create({ email, username, password: encryptPass, profilePic: secureProfilePicUrl || ""})
+        const newUser = await User.create({ email, username, password: encryptPass, profilePic: secureProfilePicUrl || "" })
 
         const payload = {
             userId: newUser._id,
@@ -47,7 +47,12 @@ exports.register = async (req, res) => {
             expiresIn: 7 * 24 * 60 * 60 * 1000
         })
 
-        res.cookie("authToken", token, { maxAge: 7 * 24 * 60 * 60 * 1000 })
+
+        res.cookie("authToken", token, {
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            httpOnly: false,
+            secure: true
+        })
 
         res.json({
             success: true,
@@ -102,10 +107,14 @@ exports.login = async (req, res) => {
 
         if (verifyPass) {
             const token = jwt.sign(payload, process.env.SECRET_KEY, {
-                expiresIn: 24 * 60 * 60 * 1000
+                expiresIn: 7 * 24 * 60 * 60 * 1000
             })
 
-            res.cookie("authToken", token, { maxAge: 24 * 60 * 60 * 1000 })
+            res.cookie("authToken", token, {
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+                httpOnly: false,
+                secure: true
+            })
 
 
             return res.json({
@@ -137,7 +146,7 @@ exports.verifyUser = async (req, res) => {
         if (user === null) {
             return res.status(404).json({ success: false })
         } else {
-            return res.status(200).json({ success: true, message: "User Verified" , payload : user._id })
+            return res.status(200).json({ success: true, message: "User Verified", payload: user._id })
         }
     } catch (error) {
         console.log(error)
